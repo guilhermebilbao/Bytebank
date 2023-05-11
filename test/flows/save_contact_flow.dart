@@ -8,8 +8,9 @@ import 'package:bytebank/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'matchers.dart';
-import 'mocks.dart';
+import '../matchers/matchers.dart';
+import '../mocks/mocks.dart';
+import 'actions.dart';
 
 void main() {
   testWidgets('Should save a contact', (tester) async {
@@ -20,16 +21,7 @@ void main() {
 
     final dashboard = find.byType(Dashboard);
     expect(dashboard, findsOneWidget); // primeiro widget do fluxo
-
-    final transferFeatureItem = find.byWidgetPredicate(
-        (widget) => // predicate é usado quando é desejado usar uma combinacao de predicados no teste (ex: icone && texto)
-            featureItemMatcher(
-                widget,
-                'Transfer',
-                Icons
-                    .monetization_on)); // informa as informações de busca (nome e icone) do widget que esta sendo testado
-    expect(transferFeatureItem, findsOneWidget); // segundo widget do fluxo
-    await tester.tap(transferFeatureItem); // teste do clique no widget
+    await clickOnTheTransferFeatureItem(tester); // segundo widget do fluxo
     await tester
         .pumpAndSettle(); // usado para exeutar todas as ações necessárias até concluir os builds
 
@@ -63,13 +55,15 @@ void main() {
     await tester.tap(createButton);
     await tester.pumpAndSettle();
 
-    verify(mockContactDao.save(Contact(0, 'Guilherme', 1000))); // verificar os dados enviados na criacao da nova conta acessando a classe Contact
+    verify(mockContactDao.save(Contact(0, 'Guilherme',
+        1000))); // verificar os dados enviados na criacao da nova conta acessando a classe Contact
 
     final contactsListBack = find.byType(
         ContactsList); // agora e o retorno da lista apos a criacao de um novo contato
     expect(contactsListBack, findsOneWidget);
 
-    verify(mockContactDao.findAll()); // verificar se apos a criacao do contato, a lista dos contatos sao chamados novamente.
+    verify(mockContactDao
+        .findAll()); // verificar se apos a criacao do contato, a lista dos contatos sao chamados novamente.
   });
 }
 

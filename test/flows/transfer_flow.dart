@@ -47,6 +47,6 @@ void main() {
     
     final transactionForm = find.byType(TransactionForm);
     expect(transactionForm, findsOneWidget);
-    
+
   });
 }

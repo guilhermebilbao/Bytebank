@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
 
 import '../database/dao/contact_dao.dart';
+import '../http/webclients/transaction_webclient.dart';
 
 class AppDependencies extends InheritedWidget {
   final ContactDao contactDao;
+  final TransactionWebClient transactionWebClient;
 
   AppDependencies({
     @required this.contactDao,
+    @required this.transactionWebClient,
     @required Widget child,
   }) : super(child: child);
 
@@ -15,8 +18,8 @@ class AppDependencies extends InheritedWidget {
 
   @override
   bool updateShouldNotify(AppDependencies oldWidget) {
-    //pode notificar quem ta usado se teve alguma modificação que é necessário fazer alguma atualização.
-
-    return contactDao != oldWidget.contactDao;
+    //avisar quem ta usando se teve alguma modificação e é necessário fazer a atualização.
+    return contactDao != oldWidget.contactDao ||
+        transactionWebClient != oldWidget.transactionWebClient;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:bytebank/database/dao/contact_dao.dart';
+import 'package:bytebank/http/webclients/transaction_webclient.dart';
 import 'package:mockito/mockito.dart';
 
 class MockContactDao extends Mock
@@ -16,3 +17,5 @@ class MockContactDao extends Mock
 // Tecnica conhecida como Injecao de dependencia. Ao inves da propria classe que precisa de alguma referencia externa
 
 // ela criar esta instancia, ela pede essa instancia para ela.
+
+class MockTransactionWebClient extends Mock implements TransactionWebClient {}

@@ -40,13 +40,13 @@ void main() {
     final contactForm = find.byType(ContactForm);
     expect(contactForm, findsOneWidget);
 
-    final nameTextField = find.byWidgetPredicate((widget) => _textFieldMatcher(
+    final nameTextField = find.byWidgetPredicate((widget) => textFieldByLabelTextMatcher(
         widget, 'Full name')); // simplificado para uma expressão
     expect(nameTextField, findsOneWidget);
     await tester.enterText(nameTextField, 'Guilherme');
 
     final accountNumberTextField = find.byWidgetPredicate(
-        (widget) => _textFieldMatcher(widget, 'Account number'));
+        (widget) => textFieldByLabelTextMatcher(widget, 'Account number'));
     expect(accountNumberTextField, findsOneWidget);
     await tester.enterText(accountNumberTextField, '1000');
 
@@ -67,9 +67,4 @@ void main() {
   });
 }
 
-bool _textFieldMatcher(Widget widget, String labelText) {
-  if (widget is TextField) {
-    return widget.decoration.labelText == labelText;
-  }
-  return false;
-}
+

@@ -2,7 +2,6 @@ import 'package:bytebank/database/dao/contact_dao.dart';
 import 'package:bytebank/screens/dashboard.dart';
 import 'package:bytebank/widgets/app_dependencies.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 
 import 'http/webclients/transaction_webclient.dart';
 
@@ -32,11 +31,10 @@ class BytebankApp extends StatelessWidget {
       child: MaterialApp(
         theme: ThemeData(
           primaryColor: Colors.green[900],
-          accentColor: Colors.blueAccent[700],
           buttonTheme: ButtonThemeData(
             buttonColor: Colors.blueAccent[700],
             textTheme: ButtonTextTheme.primary,
-          ),
+          ), colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.blueAccent[700]),
         ),
         home: Dashboard(),
       ),

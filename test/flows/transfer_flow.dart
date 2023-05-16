@@ -1,6 +1,8 @@
+import 'package:bytebank/components/response_dialog.dart';
 import 'package:bytebank/components/transaction_auth_dialog.dart';
 import 'package:bytebank/main.dart';
 import 'package:bytebank/models/contact.dart';
+import 'package:bytebank/models/transaction.dart';
 import 'package:bytebank/screens/contacts_list.dart';
 import 'package:bytebank/screens/dashboard.dart';
 import 'package:bytebank/screens/transaction_form.dart';
@@ -27,11 +29,9 @@ void main() {
 
     final dashboard = find.byType(Dashboard);
     expect(dashboard, findsOneWidget);
-
-    when(mockContactDao.findAll()).thenAnswer((invocation) async {
-      //debugPrint('name invocation ${invocation.memberName}');
-      return [Contact(0, 'Alex', 1000)];
-    });
+    final alex = Contact(0, 'Alex', 1000);
+    when(mockContactDao.findAll()).thenAnswer((invocation) async => [alex]);
+    //debugPrint('name invocation ${invocation.memberName}');
 
     await clickOnTheTransferFeatureItem(tester);
     await tester.pumpAndSettle();
@@ -55,7 +55,8 @@ void main() {
     final transactionForm = find.byType(TransactionForm);
     expect(transactionForm, findsOneWidget);
 
-    final contactName = find.text('Alex'); // segue o fluxo de logica como se fosse seguindo as proximas telas abertas no app, assim o teste consegue ir acessando.
+    final contactName = find.text(
+        'Alex'); // segue o fluxo de logica como se fosse seguindo as proximas telas abertas no app, assim o teste consegue ir acessando.
     expect(contactName, findsOneWidget);
     final contactAccountNumber = find.text('1000');
     expect(contactAccountNumber, findsOneWidget);
@@ -73,5 +74,35 @@ void main() {
 
     final transactionAuthDialog = find.byType(TransactionAuthDialog);
     expect(transactionAuthDialog, findsOneWidget);
+
+    final textFieldPassword =
+        find.byKey(transactionAuthDialogTextFieldPasswordKey);
+    // vai procurar a key que foi definida na classe transaction_auth_dialog -> TextField
+    // garantir unicidade de problemas de internacionalizacao
+    expect(textFieldPassword, findsOneWidget);
+    await tester.enterText(textFieldPassword, '1000');
+
+    final cancelButton = find.widgetWithText(TextButton, 'Cancel');
+    expect(cancelButton, findsOneWidget);
+    final confirmButton = find.widgetWithText(TextButton, 'Confirm');
+    expect(confirmButton, findsOneWidget);
+
+    when(mockTransactionWebClient.save(Transaction(null, 200, alex), '1000'))
+        .thenAnswer((_) async => Transaction(null, 200,
+            alex)); // aqui temos que garantir se a transferencia que a gente
+    // espera esta sendo chamada, chamando a funcao save aqui no teste
+    await tester.tap(confirmButton);
+    await tester.pumpAndSettle();
+    
+    final successDialog = find.byType(SuccessDialog);
+    expect(successDialog, findsOneWidget);
+    
+    final okButton = find.widgetWithText(TextButton, 'Ok');
+    expect(okButton, findsOneWidget);
+    await tester.tap(okButton);
+    await tester.pumpAndSettle();
+
+    final contactsListBack = find.byType(ContactsList);
+    expect(contactsListBack, findsOneWidget);
   });
 }

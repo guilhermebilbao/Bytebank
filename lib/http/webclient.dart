@@ -12,7 +12,6 @@ final Client client = InterceptedClient.build(
 
 Uri baseUrl = Uri.http('10.121.34.153:8080','transactions');
 
-//TODO: Altere para o seu Ip local
 /*
 Modelo:
   Uri baseUrl = Uri.http('your_ip:8080','transactions');

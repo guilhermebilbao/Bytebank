@@ -1,8 +1,10 @@
 import 'package:bytebank/database/dao/contact_dao.dart';
+import 'package:bytebank/screens/counter.dart';
 import 'package:bytebank/screens/dashboard.dart';
 import 'package:bytebank/widgets/app_dependencies.dart';
 import 'package:flutter/material.dart';
 
+import 'components/bytebankTheme.dart';
 import 'http/webclients/transaction_webclient.dart';
 
 void main() {
@@ -29,14 +31,9 @@ class BytebankApp extends StatelessWidget {
       // agora qualquer tipo de widget dentro dessa arvore de widgets pode acessar o transactionWebClient e o contactDao a partir do nosso AppDependices
       contactDao: contactDao,
       child: MaterialApp(
-        theme: ThemeData(
-          primaryColor: Colors.green[900],
-          buttonTheme: ButtonThemeData(
-            buttonColor: Colors.blueAccent[700],
-            textTheme: ButtonTextTheme.primary,
-          ), colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.blueAccent[700]),
-        ),
-        home: Dashboard(),
+        theme: bytebankTheme,
+        home: CounterContainer(),
+        //home: Dashboard(),
       ),
     );
   }

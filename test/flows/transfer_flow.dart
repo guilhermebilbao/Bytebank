@@ -27,7 +27,7 @@ void main() {
       contactDao: mockContactDao,
     )); // onde inicia o fluxo do teste
 
-    final dashboard = find.byType(Dashboard);
+    final dashboard = find.byType(DashboardContainer);
     expect(dashboard, findsOneWidget);
     final alex = Contact(0, 'Alex', 1000);
     when(mockContactDao.findAll()).thenAnswer((invocation) async => [alex]);

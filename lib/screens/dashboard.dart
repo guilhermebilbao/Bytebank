@@ -1,15 +1,32 @@
-
 import 'package:bytebank/screens/contacts_list.dart';
 import 'package:bytebank/screens/transactions_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Dashboard extends StatelessWidget {
+import 'name.dart';
 
+class DashboardContainer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => NameCubit("Guilherme"),
+      //O que fizemos foi criar um novo nome pro context, que na verdade
+      // poderia ter sido "context", de "contextBloc" ou qualquer outro:
+      child: DashboardView(),
+    );
+  }
+}
+
+class DashboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
+        title: BlocBuilder<NameCubit, String>(
+          builder: (context, state) => Text(
+              'Welcome $state'), // toda vez que o estado e alterado, ele rebuildaapenas o texto
+          // porem nao e o ideal misturar um blocBuilder (observer de eventos) com a UI
+        ),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) => SingleChildScrollView(
@@ -40,6 +57,11 @@ class Dashboard extends StatelessWidget {
                         Icons.description,
                         onClick: () => _showTransactionsList(context),
                       ),
+                      FeatureItem(
+                        'Change name',
+                        Icons.person_2_outlined,
+                        onClick: () => _showChangeName(context),
+                      ),
                     ],
                   ),
                 ),
@@ -55,6 +77,19 @@ class Dashboard extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ContactsList(),
+      ),
+    );
+  }
+
+  void _showChangeName(BuildContext blocContext) {
+    Navigator.of(blocContext).push(
+      MaterialPageRoute(
+        builder: (context) => BlocProvider.value(
+          // especificou qual o context que vai ser usado com no NameCubit
+          value: BlocProvider.of<NameCubit>(blocContext),
+          // extrai do NameCubit o valor name pois precisamos usar nessa rota
+          child: NameContainer(),
+        ),
       ),
     );
   }

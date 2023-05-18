@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+//Exemplo de contador usando bloc com duas variacoes
+
 // comportamentos ligados ao nosso estado
 // o estado nesse caso e o int, objeto primitivo
 class CounterCubit extends Cubit<int> {
@@ -12,12 +14,16 @@ class CounterCubit extends Cubit<int> {
   void decrement() => emit(state - 1);
 }
 
-class CounterContainer extends StatelessWidget { // e chamado no main
+class CounterContainer extends StatelessWidget {
+  // e chamado no main
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       // BlocProvider vai juntar o Cubit com a View
-      create: (_) => CounterCubit(), // cria um Cubit
+      create: (_) => CounterCubit(),
+      // cria um Cubit O que fizemos foi criar um
+      // novo nome pro context, que na verdade poderia ter sido "context",
+      // de "contextBloc" ou qualquer outro:
       child: CounterView(), // disponibiliza para os filhos
     );
   }
@@ -28,7 +34,7 @@ class CounterView extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: const Text("Nosso contador")),
+      appBar: AppBar(title: const Text("Counter")),
       body: Center(
         // e notificado, como se fosse um observer, quando deve ser rebuildado
         child: BlocBuilder<CounterCubit, int>(builder: (context, state) {

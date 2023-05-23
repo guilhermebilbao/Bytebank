@@ -37,12 +37,55 @@ class SentState extends TransactionFormState {
 
 // classe que busca o estado da tela de erro
 @immutable
-class FatalErrorContactsListState extends TransactionFormState {
-  const FatalErrorContactsListState();
+class FatalErrorFormState extends TransactionFormState {
+  final String _message;
+
+  const FatalErrorFormState(this._message);
 }
 
 class TransactionFormCubit extends Cubit<TransactionFormState> {
   TransactionFormCubit() : super(ShowFormState());
+
+  void save(TransactionWebClient webClient, Transaction transactionCreated,
+      String password, BuildContext context) async {
+    emit(SendingState()); // chama a tela de carregando
+    Transaction transaction = await _send(
+      webClient,
+      transactionCreated,
+      password,
+      context,
+    );
+    emit(SentState());
+    //_showSuccessfulMessage(transaction, context);
+  }
+
+  Future<Transaction> _send(
+      TransactionWebClient webClient,
+      Transaction transactionCreated,
+      String password,
+      BuildContext context) async {
+    // TODO : fazer enviar
+    // setState(() {
+    //   _sending = true;
+    // });
+    final Transaction transaction =
+        await webClient.save(transactionCreated, password).catchError((e) {
+      emit(FatalErrorFormState(e.message));
+      //_showFailureMessage(context, message: e.message);
+    }, test: (e) => e is HttpException).catchError((e) {
+      emit(FatalErrorFormState('timeout submitting the transaction'));
+      //_showFailureMessage(context, message: 'timeout submitting the transaction');
+    }, test: (e) => e is TimeoutException).catchError((e) {
+      emit(FatalErrorFormState(e.message));
+      //_showFailureMessage(context);
+    }).whenComplete(() {
+      //TODO:  completou
+      // setState(() {
+      //   _sending = false;
+      // });
+    });
+    return transaction;
+  }
 }
 
 class TransactionFormContainer extends BlocContainer {
@@ -85,27 +128,12 @@ class TransactionFormStateless extends StatelessWidget {
       if (state is SentState) {
         Navigator.pop(context);
       }
-      if (state is FatalErrorContactsListState) {
+      if (state is FatalErrorFormState) {
         // TODO tela de erro
       }
       // TODO tela de erro
       return Text("Erro!!");
     });
-  }
-
-  void _save(
-    TransactionWebClient webClient,
-    Transaction transactionCreated,
-    String password,
-    BuildContext context,
-  ) async {
-    Transaction transaction = await _send(
-      webClient,
-      transactionCreated,
-      password,
-      context,
-    );
-    _showSuccessfulMessage(transaction, context);
   }
 
   Future _showSuccessfulMessage(
@@ -118,32 +146,6 @@ class TransactionFormStateless extends StatelessWidget {
           });
       Navigator.pop(context);
     }
-  }
-
-  Future<Transaction> _send(
-      TransactionWebClient webClient,
-      Transaction transactionCreated,
-      String password,
-      BuildContext context) async {
-    // TODO : fazer enviar
-    // setState(() {
-    //   _sending = true;
-    // });
-    final Transaction transaction =
-        await _webClient.save(transactionCreated, password).catchError((e) {
-      _showFailureMessage(context, message: e.message);
-    }, test: (e) => e is HttpException).catchError((e) {
-      _showFailureMessage(context,
-          message: 'timeout submitting the transaction');
-    }, test: (e) => e is TimeoutException).catchError((e) {
-      _showFailureMessage(context);
-    }).whenComplete(() {
-      //TODO:  completou
-      // setState(() {
-      //   _sending = false;
-      // });
-    });
-    return transaction;
   }
 
   void _showFailureMessage(
@@ -162,6 +164,7 @@ class _BasicForm extends StatelessWidget {
   final Contact _contact;
   final TextEditingController _valueController = TextEditingController();
   final String transactionId = Uuid().v4();
+  final TransactionWebClient _webClient = TransactionWebClient();
 
   _BasicForm(this._contact);
 
@@ -221,8 +224,11 @@ class _BasicForm extends StatelessWidget {
                           builder: (contextDialog) {
                             return TransactionAuthDialog(
                               onConfirm: (String password) {
-                                // TODO executar o envio!!!
-                                // _save(transactionCreated, password, context);
+                                BlocProvider.of<TransactionFormCubit>(context).save(
+                                    _webClient,
+                                    transactionCreated,
+                                    password,
+                                    context); // coloca o cubit onde for precisar
                               },
                             );
                           });

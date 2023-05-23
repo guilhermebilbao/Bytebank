@@ -20,7 +20,7 @@ void main() {
       contactDao: mockContactDao, transactionWebClient: transactionWebClient,
     )); // onde inicia o fluxo do teste
 
-    final dashboard = find.byType(DashboardContainer);
+    final dashboard = find.byType(DashboardView);
     expect(dashboard, findsOneWidget); // primeiro widget do fluxo
     await clickOnTheTransferFeatureItem(tester); // segundo widget do fluxo
     await tester
